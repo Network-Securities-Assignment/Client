@@ -50,16 +50,16 @@ class LDAP {
     });
   }
 
-  createUser(username, uid, password, email, callback) {
+  createUser(username, password, email, id, callback) {
     const dn = `cn=${username},ou=users,dc=netsecurityass,dc=com`; // Định danh cho người dùng mới
     const entry = {
-      cn: email,
-      uid: uid,
-      mail: usermail,
+      cn: username,
+      sn: 'example',
+      uid: id,
+      mail: email,
       objectClass: 'inetOrgPerson',
       userPassword: password,
     };
-
     this.client.add(dn, entry, (err) => {
       if (err) {
         console.error('Error creating user:', err);
@@ -87,7 +87,7 @@ class LDAP {
     const change = new ldap.Change({
       operation: 'add',
       modification: {
-        uniqueMember: 'cn=jill,ou=users,ou=system'
+        uniqueMember: 'cn=jill,ou=users'
       }
     });
 

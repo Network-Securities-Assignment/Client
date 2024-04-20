@@ -36,10 +36,10 @@ app.get('/searchUser', (req, res) => {
 
 // Route để tạo người dùng trong LDAP
 app.post('/createUser', (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password, email ,uid} = req.body;
 
   // Gọi phương thức createUser từ đối tượng ldapClient
-  ldapClient.createUser(username, password, email, (err) => {
+  ldapClient.createUser(username, password, email, uid, (err) => {
     if (err) {
       res.status(500).json({ error: 'Error creating user' });
     } else {
