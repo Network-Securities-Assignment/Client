@@ -22,10 +22,23 @@ app.post('/authenticate', (req, res) => {
   });
 });
 
-// Route để tìm kiếm người dùng trong LDAP
-app.get('/searchUser', (req, res) => {
+// Route để tìm kiếm tất cả người dùng trong LDAP
+app.get('/searchAllUsers', (req, res) => {
   // Gọi phương thức searchUser từ đối tượng ldapClient
-  ldapClient.searchUsers((err, result) => {
+  ldapClient.searchAllUsers((err, result) => {
+    if (err) {
+      res.status(500).json({ error: 'Error searching all users' });
+    } else {
+      res.status(200).json({ users: result });
+    }
+  });
+});
+
+// Route để tìm kiếm 1 người dùng trong LDAP
+app.get('/searchUser/:username', (req, res) => {
+  const { username } = req.params;
+  // Gọi phương thức searchUser từ đối tượng ldapClient
+  ldapClient.searchUser(username, (err, result) => {
     if (err) {
       res.status(500).json({ error: 'Error searching user' });
     } else {
@@ -93,9 +106,9 @@ app.delete('/deleteUserFromGroup/:groupname', (req, res) => {
 // Route để cập nhật thuộc tính của người dùng trong LDAP
 app.put('/updateUser/:username', (req, res) => {
   const { username } = req.params;
-
+  const { newname, newpassword} = req.body;
   // Gọi phương thức updateUser từ đối tượng ldapClient
-  ldapClient.updateUser(username, (err) => {
+  ldapClient.updateUser(username, newname, newpassword,(err) => {
     if (err) {
       res.status(500).json({ error: 'Error updating user' });
     } else {

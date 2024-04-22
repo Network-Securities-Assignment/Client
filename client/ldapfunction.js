@@ -17,10 +17,43 @@ class LDAP {
       }
     });
   }
-
-  searchUsers(callback) {
+  
+  searchUser(username,callback) {
     const opts = {
-      filter: '(objectClass=*)',
+      filter: '(objectClass=inetOrgPerson)',
+      scope: 'sub',
+      attributes: ['sn']
+    };
+    const dn = `cn=${username},ou=users,dc=netsecurityass,dc=com`;
+
+    this.client.search(dn, opts, (err, res) => {
+      if (err) {
+        console.log("Error in search " + err);
+        callback(err, null);
+      } else {
+        const users = [];
+        res.on('searchEntry', (entry) => {
+          console.log("Search successfully!");
+          users.push(entry.pojo);
+        });
+        res.on('searchReference', (referral) => {
+          console.log('Referral: ' + referral.uris.join());
+        });
+        res.on('error', (err) => {
+          console.error('Error: ' + err.message);
+          callback(err, null);
+        });
+        res.on('end', (result) => {
+          console.log('Status: ' + result.status);
+          callback(null, users);
+        });
+      }
+    });
+  }
+
+  searchAllUsers(callback) {
+    const opts = {
+      filter: '(objectClass=inetOrgPerson)',
       scope: 'sub',
       attributes: ['sn']
     };
@@ -84,14 +117,18 @@ class LDAP {
   }
 
   addUserToGroup(groupname, callback) {
+    const dn = `cn=${groupname},ou=groups,dc=netsecurityass,dc=com`;
+    const newUser = new ldap.Attribute({
+      // type: 'uniqueMember',
+      // values: 'cn=u4,ou=users'
+      uniqueMember: 'cn=u4,ou=users,dc=netsecurityass,dc=com'
+    });
     const change = new ldap.Change({
       operation: 'add',
-      modification: {
-        uniqueMember: 'cn=jill,ou=users'
-      }
+      modification: newUser
     });
 
-    this.client.modify(groupname, change, (err) => {
+    this.client.modify(dn, change, (err) => {
       if (err) {
         console.error('Error adding user to group:', err);
         callback(err);
@@ -121,7 +158,7 @@ class LDAP {
     });
   }
 
-  updateUser(username, callback) {
+  updateUser(username, newname, password, callback) {
     // const change = new ldap.Change({
     //   // operation: 'add',  //use add to add new attribute
     //   operation: 'replace', // use replace to update the existing attribute
@@ -130,17 +167,39 @@ class LDAP {
     //     // 'displayName': 'test123'
     //   }
     // });
-    const change = new ldap.Change({
+    // const newAtt = new ldap.Attribute({
+    //   type: 'sn',
+    //   values: '1263'
+    // });
+    // const change = new ldap.Change({
+    //   operation: 'replace',
+    //   modification: newAtt
+    // });
+
+    const changes = [];
+
+    // Thêm các thuộc tính mới vào danh sách thay đổi
+    // const newSn = new ldap.Attribute({
+    //   type: 'cn',
+    //   values: newname
+    // });
+    // changes.push({
+    //   operation: 'replace',
+    //   modification: newSn
+    // });
+  
+    const newUserPassword = new ldap.Attribute({
+      type: 'userPassword',
+      values: password
+    });
+    changes.push({
       operation: 'replace',
-      modification: {
-        type: 'sn',
-        values: '1263'
-      }
+      modification: newUserPassword
     });
 
     const dn = `cn=${username},ou=users,dc=netsecurityass,dc=com`;
 
-    this.client.modify(dn, change, (err) => {
+    this.client.modify(dn, changes, (err) => {
       if (err) {
         console.error('Error updating user:', err);
         callback(err);
@@ -177,6 +236,76 @@ class LDAP {
   }
 
   // Thêm các phương thức khác tương tác với LDAP ở đây
+  createObject(objectname, objecttype, callback) {
+    // objecttype = role, group
+    const dn = `cn=${objectname},ou=${objecttype},dc=netsecurityass,dc=com`; // Định danh cho người dùng mới
+    const entry = {
+      cn: objectname,
+      structuralObjectClass: 'posixGroup',
+    };
+    // if (objecttype === 'group') {
+    //   entry.objectClass = 'posixGroup';
+    // }
+    // else if (objecttype === 'role') {
+    //   entry.objectClass = 'organizationalRole';
+    // }
+    this.client.add(dn, entry, (err) => {
+      if (err) {
+        console.error(`Error creating ${objecttype}:`, err);
+        return callback(err);
+      } else {
+        console.log(`${objecttype} created successfully`);
+        return callback(null);
+      }
+    });
+  }
+
+  deleteObject(objectname, objecttype, callback) {
+    // objecttype = role, group
+    const dn = `cn=${objectname},ou=${objecttype},dc=netsecurityass,dc=com`; // Định danh cho người dùng mới
+    this.client.del(dn, (err) => {
+      if (err) {
+        console.error(`Error deleting ${objecttype}:`, err);
+        return callback(err);
+      } else {
+        console.log(`${objecttype} deleting successfully`);
+        return callback(null);
+      }
+    });
+  }
+
+  createRole(rolename, callback) {
+    this.createObject(rolename, 'role', callback);
+  }
+
+  // createGroup(groupname, callback) {
+  //   this.createObject(groupname, 'group', callback);
+  // }
+
+  createGroup(groupname, callback) {
+    const dn = `cn=${groupname},ou=groups,dc=netsecurityass,dc=com`; // Định danh cho người dùng mới
+    const entry = {
+      cn: groupname,
+      objectClass: 'groupOfNames',
+    };
+    this.client.add(dn, entry, (err) => {
+      if (err) {
+        console.error('Error creating group:', err);
+        return callback(err);
+      } else {
+        console.log('Group created successfully');
+        return callback(null);
+      }
+    });
+  }
+
+  deleteRole(rolename, callback) {
+    this.deleteObject(rolename, 'role', callback);
+  }
+
+  deleteGroup(groupname, callback) {
+    this.deleteObject(groupname, 'group', callback);
+  }
 }
 
 module.exports = LDAP;
@@ -193,3 +322,36 @@ module.exports = LDAP;
 // });
 
 // console.log(ldapClients.searchUsers());
+
+
+// ldapClients.addUserToGroup('hr', (err) => {
+//   if (err) {
+//     console.log('Error adding user to group');
+//   } else {
+//     console.log('User added to group successfully');
+//   }
+// });
+
+// ldapClients.createRole('Test 1', (err) => {
+//   if (err) {
+//     console.log('Error creating role');
+//   } else {
+//     console.log('Role created successfully');
+//   }
+// });
+
+// ldapClients.deleteRole('Test Power', (err) => {
+//   if (err) {
+//     console.log('Error dl role');
+//   } else {
+//     console.log('Role dl successfully');
+//   }
+// });
+
+// ldapClients.createGroup('ttttt', (err) => {
+//   if (err) {
+//     console.log('Error creating group');
+//   } else {
+//     console.log('Group created successfully');
+//   }
+// });
