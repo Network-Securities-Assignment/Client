@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const LDAP = require('./ldapfunction');
 
@@ -7,6 +8,7 @@ const ldapClient = new LDAP('ldap://localhost:389');
 
 // Middleware để xử lý JSON
 app.use(express.json());
+app.use(cors()); 
 
 // Route để xác thực người dùng với LDAP
 app.post('/authenticate', (req, res) => {

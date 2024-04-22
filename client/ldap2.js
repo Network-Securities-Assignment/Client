@@ -21,23 +21,6 @@ function authenticateDN(username, password) {
         } else {
             /*if connection is success then go for any operation*/
             console.log("Success");
-            // searchUser();
-            // addUser('roo', '1211');
-            // deleteUser('user1');
-            //addUserToGroup('cn=Administrators,ou=groups,ou=system');
-            //deleteUserFromGroup('cn=Administrators,ou=groups,ou=system');
-            // updateUser('cn=user2,ou=users,dc=netsecurityass,dc=com');
-            //compare('cn=test,ou=users,ou=system');
-            // modifyDN('cn=bar,ou=users,ou=system');
-
-            // createUser('user2', 'password123', (err) => {
-            //     if (!err) {
-            //       // Gọi các hàm tương tác LDAP khác tại đây (vd: deleteUser, searchUser)
-            //       console.log('User created successfully');
-            //     } else {
-            //       console.error('Error creating user:', err);
-            //     }
-            // });
         }
     });
 }
