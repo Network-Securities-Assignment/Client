@@ -76,11 +76,11 @@ app.delete('/deleteUser/:username', (req, res) => {
 });
 
 // Route để thêm người dùng vào nhóm trong LDAP
-app.post('/addUserToGroup/:groupname', (req, res) => {
-  const { groupname } = req.params;
+app.post('/addUserToGroup', (req, res) => {
+  const { username, groupname } = req.body;
 
   // Gọi phương thức addUserToGroup từ đối tượng ldapClient
-  ldapClient.addUserToGroup(groupname, (err) => {
+  ldapClient.addUserToGroup(username, groupname, (err) => {
     if (err) {
       res.status(500).json({ error: 'Error adding user to group' });
     } else {
@@ -90,11 +90,11 @@ app.post('/addUserToGroup/:groupname', (req, res) => {
 });
 
 // Route để xóa người dùng khỏi nhóm trong LDAP
-app.delete('/deleteUserFromGroup/:groupname', (req, res) => {
-  const { groupname } = req.params;
+app.delete('/deleteUserFromGroup/:groupname/:username', (req, res) => {
+  const { username, groupname } = req.params;
 
   // Gọi phương thức deleteUserFromGroup từ đối tượng ldapClient
-  ldapClient.deleteUserFromGroup(groupname, (err) => {
+  ldapClient.deleteUserFromGroup(username, groupname, (err) => {
     if (err) {
       res.status(500).json({ error: 'Error deleting user from group' });
     } else {

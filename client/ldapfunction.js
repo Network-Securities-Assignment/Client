@@ -17,7 +17,7 @@ class LDAP {
       }
     });
   }
-  
+
   searchUser(username,callback) {
     const opts = {
       filter: '(objectClass=inetOrgPerson)',
@@ -116,17 +116,17 @@ class LDAP {
     });
   }
 
-  addUserToGroup(groupname, callback) {
+  addUserToGroup(username ,groupname, callback) {
     const dn = `cn=${groupname},ou=groups,dc=netsecurityass,dc=com`;
     const newUser = new ldap.Attribute({
-      // type: 'uniqueMember',
-      // values: 'cn=u4,ou=users'
-      uniqueMember: 'cn=u4,ou=users,dc=netsecurityass,dc=com'
+      type: 'memberUid',
+      values: `cn=${username}, ou=users, dc=netsecurityass, dc=com`
     });
     const change = new ldap.Change({
       operation: 'add',
       modification: newUser
     });
+    
 
     this.client.modify(dn, change, (err) => {
       if (err) {
@@ -139,15 +139,18 @@ class LDAP {
     });
   }
 
-  deleteUserFromGroup(groupname, callback) {
+  deleteUserFromGroup(username, groupname, callback) {
+    const dn = `cn=${groupname},ou=groups,dc=netsecurityass,dc=com`;
+    const deluser = new ldap.Attribute({
+      type: 'memberUid',
+      values: `cn=${username}, ou=users, dc=netsecurityass, dc=com`
+    });
     const change = new ldap.Change({
       operation: 'delete',
-      modification: {
-        uniqueMember: 'cn=hiii,ou=users,ou=system'
-      }
+      modification: deluser
     });
 
-    this.client.modify(groupname, change, (err) => {
+    this.client.modify(dn, change, (err) => {
       if (err) {
         console.error('Error deleting user from group:', err);
         callback(err);
@@ -282,11 +285,12 @@ class LDAP {
   //   this.createObject(groupname, 'group', callback);
   // }
 
-  createGroup(groupname, callback) {
+  createGroup(groupname, gid, callback) {
     const dn = `cn=${groupname},ou=groups,dc=netsecurityass,dc=com`; // Định danh cho người dùng mới
     const entry = {
       cn: groupname,
-      objectClass: 'groupOfNames',
+      gidNumber: gid,
+      objectClass: 'posixGroup',
     };
     this.client.add(dn, entry, (err) => {
       if (err) {
@@ -321,6 +325,14 @@ module.exports = LDAP;
 //   }
 // });
 
+// ldapClients.createGroup('Test_1', 800, (err) => {
+//   if (err) {
+//     console.log('Error creating group');
+//   } else {
+//     console.log('Group created successfully');
+//   }
+// });
+
 // console.log(ldapClients.searchUsers());
 
 
@@ -348,10 +360,3 @@ module.exports = LDAP;
 //   }
 // });
 
-// ldapClients.createGroup('ttttt', (err) => {
-//   if (err) {
-//     console.log('Error creating group');
-//   } else {
-//     console.log('Group created successfully');
-//   }
-// });
