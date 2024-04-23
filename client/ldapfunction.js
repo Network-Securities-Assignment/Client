@@ -59,7 +59,7 @@ class LDAP {
       attributes: ['cn', 'sn', 'givenName', 'uid', 'gidNumber']
     };
 
-    this.client.search('cn=IT,ou=users,dc=netsecurityass,dc=com', opts, (err, res) => {
+    this.client.search('ou=users,dc=netsecurityass,dc=com', opts, (err, res) => {
       if (err) {
         console.log("Error in search " + err);
         callback(err, null);
