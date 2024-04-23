@@ -55,18 +55,29 @@ class LDAP {
     const opts = {
       filter: '(objectClass=inetOrgPerson)',
       scope: 'sub',
-      attributes: ['sn']
+      // attributes: ['sn']
+      attributes: ['cn', 'sn', 'givenName', 'uid', 'gidNumber']
     };
 
-    this.client.search('ou=users,dc=netsecurityass,dc=com', opts, (err, res) => {
+    this.client.search('cn=IT,ou=users,dc=netsecurityass,dc=com', opts, (err, res) => {
       if (err) {
         console.log("Error in search " + err);
         callback(err, null);
       } else {
         const users = [];
         res.on('searchEntry', (entry) => {
+          const userData = entry.pojo
+          const user = {
+            username: userData.attributes[2].values,
+            info: userData.attributes.reduce((obj, item) => {
+              obj[item.type] = item.values;
+              return obj;
+            }, {})
+          };
+          // users.push(user);
+
           console.log("Search successfully!");
-          users.push(entry.pojo);
+          users.push(user);
         });
         res.on('searchReference', (referral) => {
           console.log('Referral: ' + referral.uris.join());
@@ -83,6 +94,7 @@ class LDAP {
     });
   }
 
+ 
   createUser(username, password, email, id, callback) {
     const dn = `cn=${username},ou=users,dc=netsecurityass,dc=com`; // Định danh cho người dùng mới
     const entry = {
