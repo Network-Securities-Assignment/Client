@@ -22,9 +22,9 @@ footer{
     text-align: center;
 }
 #layout{
-    @apply desktop:max-w-2xl m-auto bg-white;
+    @apply bg-white;
     display: grid;
-    grid-template-columns: 1fr 3fr; // Sidebar takes 1 fraction of space, main takes 3
+    grid-template-columns: 1fr 4fr; // Sidebar takes 1 fraction of space, main takes 3
     grid-template-rows: auto 1fr auto; // Header and footer are auto-sized, main content is flexible
     grid-template-areas: 
         "header header header"

@@ -6,9 +6,10 @@ import './Layout.scss'
 const Layout = ({children}) => {
 
     return (
-        <div id="layout">
+        <div id="layout" >
             <Sidebar/>
-            <main id="main">
+            <Header/>
+            <main id="main" className="bg-main-400">
                 {children}
             </main>
         </div>

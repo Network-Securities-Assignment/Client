@@ -1,5 +1,25 @@
+import { useState } from "react"
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { authenticateUser } from "../../../redux/auth/slice";
 const Login = () => {
-
+    const [username, setUserName] = useState();
+    const [password, setPassWord] = useState()
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        dispatch(authenticateUser({ username: username, password :password }))
+            .unwrap()
+            .then(() => {
+                alert('Login successful!');
+                navigate('/');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Login failed: ' + error);
+            });
+    };
 
     return (
         <div className='flex flex-col gap-4 p-4 h-full w-full '>
@@ -14,6 +34,7 @@ const Login = () => {
                         name='username'
                         type='text'
                         label='Username'
+                        onChange={e => setUserName(e.target.value)}
                     />
                     <label className="
                         opacity-70 pointer-events-none
@@ -31,6 +52,7 @@ const Login = () => {
                         name='username'
                         type='password'
                         label='Password'
+                        onChange={e => setPassWord(e.target.value)}
                     />
                     <label className="
                         opacity-70 pointer-events-none
@@ -39,7 +61,7 @@ const Login = () => {
                         "
                     >Password</label>
                 </div>
-                <button className='
+                <button onClick={handleSubmit} className='
                 hover:bg-main-400 hover:text-main-300
                 col-span-3 bg-main-300 rounded-lg p-2 text-sm font-mono font-bold text-white'>
                     Login
