@@ -73,6 +73,44 @@ export const addUserToGroup = createAsyncThunk(
 )
 
 
+export const searchGroup = createAsyncThunk(
+    'group/searchGroup',
+    async (groupName, {rejectWithValue}) => {
+        try {
+            console.log(groupName)
+            const response = await axios.get(`http://localhost:3000/searchGroup/${groupName}`);
+            console.log(response.data.group)
+            return response.data.group;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const removeUserFromGroup = createAsyncThunk(
+    'group/removeUserFromGroup', 
+    async ({userCN, groupName}, {rejectWithValue,dispatch}) => {
+        try {
+            console.log(userCN, groupName)
+            const response = await axios.delete(`http://localhost:3000/removeUserFromGroup`,{
+                data: {
+                    userCN,
+                    groupName
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+,
+            })
+            dispatch(searchGroup(groupName))
+            return response.data;
+        }catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
+
 const Slice = createSlice({
     name: 'group',
     initialState: {
@@ -80,6 +118,7 @@ const Slice = createSlice({
         loading: false,
         error: null,
         maxGID: 0,
+        currentGroup:{},
     },
     reducers: {
         setMaxGID(state, action) {
@@ -135,6 +174,29 @@ const Slice = createSlice({
             state.error = null;
         })
         .addCase(addUserToGroup.rejected, (state, action) => {
+            state.error = action.payload;
+            state.loading = false;
+        })
+        .addCase(searchGroup.fulfilled, (state, action) => {
+            state.currentGroup = action.payload;
+            state.loading = false;
+        })
+        .addCase(searchGroup.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(searchGroup.rejected, (state, action) => {
+            state.error = action.payload;
+            state.loading = false;
+        })
+        .addCase(removeUserFromGroup.fulfilled, (state) => {
+            state.loading = false;
+        })
+        .addCase(removeUserFromGroup.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(removeUserFromGroup.rejected, (state, action) => {
             state.error = action.payload;
             state.loading = false;
         });

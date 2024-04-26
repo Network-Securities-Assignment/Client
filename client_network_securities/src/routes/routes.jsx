@@ -6,11 +6,13 @@ import Auth, { Select } from '../pages/Auth/Auth'
 import Signup from '../pages/Auth/Signup/Signup'
 import Group from '../pages/Group/Group'
 import User from '../pages/User/User'
-import { useSelector } from 'react-redux'
-import { useEffect } from 'react'
 import AddUser from '../pages/User/AddUser'
 import AddGroup from '../pages/Group/AddGroup'
 import EditUser from '../pages/User/EditUser'
+import EditGroup from '../pages/Group/EditGroup'
+import { isAuthenticated } from '../utils/auth'
+import { useEffect } from 'react'
+
 const privateRoutes = [
     {
         name: 'Home',
@@ -31,6 +33,11 @@ const privateRoutes = [
         name: 'Group',
         path: '/group',
         component: Group
+    }, 
+    {
+        name: 'EditGroup',
+        path: '/group/:groupname',
+        component: EditGroup,
     }, 
     {
         name: 'User',
@@ -63,47 +70,44 @@ const publicRoutes =[
 ]
 
 const MainRoute = () => {
-    const location = useLocation()
-    const isAuth = useSelector(state => state.auth.isAuth)
-    const navigate = useNavigate()
-    useEffect(() => {
-        if(!isAuth) navigate('/auth')
-    },[])
+    const PrivateRoute = ({ children }) => {
+        return isAuthenticated() ? children : <Navigate to="/auth/" replace />;
+    };
+
+    const PublicRoute = ({ children }) => {
+        return !isAuthenticated() ? children : <Navigate to="/" replace />;
+    };
+
     return (
-        <Routes location={location}> 
-            {publicRoutes.map((route, index) => {
-                const Page = route.component
-                return (
-                    <Route
-                        key={index}
-                        path={route.path}
-                        element={
+        <Routes>
+            {publicRoutes.map((route, index) => (
+                <Route
+                    key={index}
+                    path={route.path}
+                    element={
+                        <PublicRoute>
                             <Auth>
-                                <Page/>
+                                <route.component />
                             </Auth>
-                        }
-                    />
-                )
-            })}
-            { privateRoutes.map((route, index) => {
-                const Page = route.component
-                return (
-                    <Route
-                        key={index}
-                        path={route.path}
-                        element={
-                            isAuth ? (
+                        </PublicRoute>
+                    }
+                />
+            ))}
+            {privateRoutes.map((route, index) => (
+                <Route
+                    key={index}
+                    path={route.path}
+                    element={
+                        <PrivateRoute>
                             <Layout>
-                                <Page/>
+                                <route.component />
                             </Layout>
-                            ) : <Navigate to= '/' replace/>
-
-                        } 
-                    />
-                )
-            })}
+                        </PrivateRoute>
+                    }
+                />
+            ))}
         </Routes>
-    )
-}
+    );
+};
 
-export default MainRoute
+export default MainRoute;

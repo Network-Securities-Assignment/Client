@@ -127,7 +127,6 @@ const EditUser = () => {
                 <button type="submit" className="bg-main-300 hover:bg-main-200 text-main-400 hover:text-main-300 font-bold py-2 px-4 rounded-lg">Update User</button>
             </form>
         </div>
-
     );
 }
 

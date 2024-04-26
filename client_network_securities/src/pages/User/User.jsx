@@ -54,7 +54,7 @@ const User = () => {
               </thead>
               <tbody>
                 {allUserData.map((userData, index) => (
-                  <tr key={index} className="border-b bg-gray-800 border-gray-700 text-neutral-200 text-center">
+                  <tr key={index} className="border-b bg-gray-800 border-gray-700 text-neutral-200 text-center font-mono text-lg">
                     <td className="py-4 px-6">
                       {userData.info.uidNumber}
                     </td>
@@ -75,12 +75,12 @@ const User = () => {
                     </td>
                     <td className="flex flex-col font-semibold">
                       <Link to={`${userData.username}`}
-                      className="h-full px-6 py-2 bg-main-200 hover:bg-main-300">
+                        className="py-2 px-6 bg-main-300 hover:bg-main-400 hover:text-main-200">
                           Edit
                       </Link>
                       <button 
                       onClick={() => handleDeleteUser(userData.username)}
-                      className="h-full px-6 py-2 bg-main-100 hover:bg-main-300">
+                      className="py-2 px-5 bg-red-500 hover:bg-main-400 hover:text-main-200">
                         Delete
                       </button>
                     </td>

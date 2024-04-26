@@ -45,30 +45,37 @@ const Group = () => {
               </thead>
               <tbody>
                 {allGroupsData.map((group, index) => (
-                  <tr key={index} className="border-b bg-gray-800 border-gray-700 text-neutral-200 text-center">
+                  <tr key={index} className="border-b bg-gray-800 border-gray-700 text-neutral-200 text-center font-mono text-lg">
                     <td className="py-4 px-6">
                       {group[1].values[0]}
                     </td>
                     <td className="py-4 px-6">
                       {group[0].values[0]}
                     </td>
-                    <td className="py-1 px-2">
+                    <td className="py-1 px-2 flex flex-col gap-2 overflow-y-auto">
                       {group[2] ? group[2].values.map((value, index) => (
-                      <div key={index} className="py-4 px-6">
-                        {value}
+                      <div key={index} className="flex">
+                        <div className="border-r border-main-400 px-2">
+                          {index}
+                        </div>
+                        <div className="px-2">
+                          {value}
+                        </div>
                       </div>
                       )) : "Empty"}
                     </td>
-                    <td className="flex flex-col font-semibold">
-                      <Link to=''
-                       className="h-full px-6 py-2 bg-main-200 hover:bg-main-300">
-                          Edit
-                      </Link>
-                      <button 
-                      onClick={() => handleDeleteGroup(group[0].values[0])}
-                      className="h-full px-6 py-2 bg-main-100 hover:bg-main-300">
-                        Delete
-                      </button>
+                    <td className="font-semibold text-md">
+                      <div className="flex items-center justify-center">
+                        <Link to={`${group[0].values[0]}`}
+                        className="py-2 px-6 bg-main-300 hover:bg-main-400 hover:text-main-200">
+                            Edit
+                        </Link>
+                        <button 
+                        onClick={() => handleDeleteGroup(group[0].values[0])}
+                        className="py-2 px-5 bg-red-500 hover:bg-main-400 hover:text-main-200">
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
