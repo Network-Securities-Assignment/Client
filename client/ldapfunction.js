@@ -406,7 +406,53 @@ class LDAP {
     }
   }
 
-  addManyUserToGroup (userList, groupName , callback){
+  updateGroup(groupname, groupData, callback) {
+    const oldGroupDN = `cn=${groupname},ou=groups,dc=netsecurityass,dc=com`;
+    const newGroupDN = `cn=${groupData.groupName},ou=groups,dc=netsecurityass,dc=com`;
+    const changes = [];
+
+
+      // Helper function to add change only if value is defined and not null
+      const addChangeIfDefined = (attrType, value) => {
+        if (value !== undefined && value !== null) {
+            changes.push(new ldap.Change({
+                operation: 'replace',
+                modification: new ldap.Attribute({
+                    type: attrType,
+                    values: [value]  // Ensure the value is encapsulated in an array
+                })
+            }));
+        }
+      };
+  
+      addChangeIfDefined('gidNumber', groupData.gidNumber);
+    // Perform the update
+    if (changes.length > 0) {
+      this.client.modify(oldGroupDN, changes, (err) => {
+          if (err) {
+              console.error('Failed to update Group gidNumber:', err);
+              callback(err);
+          } else {
+              console.log('Group gidNumber updated successfully');
+              groupData.userList && this.addManyUserToGroup(groupData.userList, groupname)
+              this.client.modifyDN(oldGroupDN, newGroupDN, (err) => {
+                if (err) {
+                    console.error('Failed to rename the group:', err);
+                    callback(err);
+                    return;
+                }
+                console.log('Group renamed successfully');
+                callback(null);
+            });
+          }
+      });
+      } else {
+          console.log('No valid attributes to update');
+          callback(null, 'No changes made'); // Inform caller that no changes were made
+      }
+  }
+
+  addManyUserToGroup (userList, groupName){
     console.log(userList)
     userList.forEach(user => {
       this.addUserToGroup(user, groupName, (err) => {
@@ -442,58 +488,6 @@ class LDAP {
     });
   }
 
-  // updateUser(username, newname, password, callback) {
-  //   // const change = new ldap.Change({
-  //     //   // operation: 'add',  //use add to add new attribute
-  //     //   operation: 'replace', // use replace to update the existing attribute
-  //     //   modification: {
-  //       //     sn: '1263',
-  //       //     // 'displayName': 'test123'
-  //       //   }
-  //       // });
-  //       // const newAtt = new ldap.Attribute({
-  //         //   type: 'sn',
-  //         //   values: '1263'
-  //         // });
-  //         // const change = new ldap.Change({
-  //           //   operation: 'replace',
-  //           //   modification: newAtt
-  //           // });
-            
-  //           const changes = [];
-            
-  //           // Thêm các thuộc tính mới vào danh sách thay đổi
-  //           // const newSn = new ldap.Attribute({
-  //             //   type: 'cn',
-  //             //   values: newname
-  //             // });
-  //             // changes.push({
-  //               //   operation: 'replace',
-  //               //   modification: newSn
-  //               // });
-                
-  //               const newUserPassword = new ldap.Attribute({
-  //                 type: 'userPassword',
-  //                 values: password
-  //               });
-  //               changes.push({
-  //                 operation: 'replace',
-  //                 modification: newUserPassword
-  //   });
-
-  //   const dn = `cn=${username},ou=users,dc=netsecurityass,dc=com`;
-    
-  //   this.client.modify(dn, changes, (err) => {
-  //     if (err) {
-  //       console.error('Error updating user:', err);
-  //       callback(err);
-  //     } else {
-  //       console.log('User updated successfully');
-  //       callback(null);
-  //     }
-  //   });
-  // }
-  
   compare(dn, callback) {
     this.client.compare(dn, 'sn', '1263', (err, matched) => {
       if (err) {
@@ -584,10 +578,6 @@ class LDAP {
     this.createObject(rolename, 'role', callback);
   }
 
-
-
-
-
   createGroup(groupname, gid, callback) {
     const dn = `cn=${groupname},ou=groups,dc=netsecurityass,dc=com`; // Định danh cho người dùng mới
     const entry = {
@@ -660,7 +650,6 @@ class LDAP {
       }
     });
   }
-
 
   // Role
   createRole(rolename, callback) {

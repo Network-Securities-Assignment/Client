@@ -298,6 +298,18 @@ app.put('/updateUser/:username', (req,res) => {
   })
 })
 
+app.put('/updateGroup/:groupname', (req,res) => {
+  const {groupname} = req.params
+  const {groupData} = req.body
+  console.log(groupData)
+  
+  ldapClient.updateGroup(groupname, groupData, (err) => {
+    if (err) res.status(500).json({ error: 'Error updating group' });
+    else 
+      res.status(200).json({ message: 'Group updated successfully' });
+  })
+})
+
 
 // // Route để cập nhật thuộc tính của người dùng trong LDAP
 // app.put('/updateUser/:username', (req, res) => {
