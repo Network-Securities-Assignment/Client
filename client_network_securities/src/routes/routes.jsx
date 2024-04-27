@@ -12,6 +12,7 @@ import EditUser from '../pages/User/EditUser'
 import EditGroup from '../pages/Group/EditGroup'
 import { isAuthenticated } from '../utils/auth'
 import { useEffect } from 'react'
+import History from '../pages/History/History'
 
 const privateRoutes = [
     {
@@ -44,10 +45,15 @@ const privateRoutes = [
         path: '/addUser',
         component: AddUser
     }, 
-        {
+    {
         name: 'Add Group',
         path: '/addGroup',
         component: AddGroup
+    }, 
+    {
+        name: 'History',
+        path: '/history',
+        component: History,
     }, 
 
 ]

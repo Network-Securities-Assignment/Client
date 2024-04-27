@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { deleteGroup, searchAllGroups } from "../../redux/group/slice"
 import { Link } from "react-router-dom"
+import { attributeObject } from "../../utils/obj"
 const Group = () => {
     const dispatch = useDispatch()
     
@@ -47,13 +48,13 @@ const Group = () => {
                 {allGroupsData.map((group, index) => (
                   <tr key={index} className="border-b bg-gray-800 border-gray-700 text-neutral-200 text-center font-mono text-lg">
                     <td className="py-4 px-6">
-                      {group[1].values[0]}
+                      {attributeObject(group).gidNumber}
                     </td>
                     <td className="py-4 px-6">
-                      {group[0].values[0]}
+                      {attributeObject(group).cn}
                     </td>
-                    <td className="py-1 px-2 flex flex-col gap-2 overflow-y-auto">
-                      {group[2] ? group[2].values.map((value, index) => (
+                    <td className="py-1 px-2 flex flex-col gap-2 ">
+                      {attributeObject(group).cn ? attributeObject(group).memberUid.map((value, index) => (
                       <div key={index} className="flex">
                         <div className="border-r border-main-400 px-2">
                           {index}
@@ -66,12 +67,12 @@ const Group = () => {
                     </td>
                     <td className="font-semibold text-md">
                       <div className="flex items-center justify-center">
-                        <Link to={`${group[0].values[0]}`}
+                        <Link to={`${attributeObject(group).cn}`}
                         className="py-2 px-6 bg-main-300 hover:bg-main-400 hover:text-main-200">
                             Edit
                         </Link>
                         <button 
-                        onClick={() => handleDeleteGroup(group[0].values[0])}
+                        onClick={() => handleDeleteGroup(attributeObject(group).cn[0])}
                         className="py-2 px-5 bg-red-500 hover:bg-main-400 hover:text-main-200">
                           Delete
                         </button>

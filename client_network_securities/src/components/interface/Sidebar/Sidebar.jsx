@@ -38,11 +38,17 @@ const Sidebar = () => {
                 },
             ]
         },
+        {
+            icon: <FontAwesomeIcon icon="fa-solid fa-history" className="w-5"/>, 
+            name: 'History',
+            link: '/history',
+            children: []
+        },
 
     ]
 
     return (
-        <aside className="bg-main-100  px-0 py-10">
+        <aside className="bg-main-100 px-0 py-10">
             <div className="flex flex-col">
                 <div className="text-main-400">
                     <h1 className="pl-4 pb-2 text-sm">Manage</h1>

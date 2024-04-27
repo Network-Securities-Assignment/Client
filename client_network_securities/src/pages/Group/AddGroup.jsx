@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import classes from './Group.module.css'
 import { useEffect, useState } from 'react';
-import { addGroup, addUserToGroup, searchAllGroups } from '../../redux/group/slice';
+import { addGroup, addUserToGroup } from '../../redux/group/slice';
 import { searchAllUsers } from '../../redux/user/slice';
 
 const AddGroup = () => {

@@ -2,10 +2,14 @@ import { useParams } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { useState, useEffect } from "react"
 import classes from './Group.module.css'
-import { removeUserFromGroup, searchGroup } from "../../redux/group/slice"
+import { removeUserFromGroup, searchGroup, updateGroup } from "../../redux/group/slice"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { searchAllUsers } from "../../redux/user/slice"
 const EditGroup = () => {
     const {groupname} = useParams()
+
+    const [selectedAccounts, setSelectedAccounts] = useState([]);
+
     const dispatch = useDispatch()
     
     const [formData, setFormData] = useState({
@@ -16,22 +20,25 @@ const EditGroup = () => {
 
     useEffect(() => {
         dispatch(searchGroup(groupname))
+        dispatch(searchAllUsers())
     }, [dispatch, groupname])
 
     const {currentGroup, loading, error} = useSelector(state => state.group)
+    const {allUserData, loading1, error1} = useSelector(state => state.user)
+
     useEffect(() => {
-        console.log(currentGroup)
         if (currentGroup && currentGroup.info) {
-            setFormData({
+            setFormData(prev => ({
+                ...prev,
                 groupName: currentGroup.groupName,
                 gidNumber: currentGroup.info.gidNumber[0],
-                userMember: currentGroup.info.memberUid
-            });
+            }));
         }
     },[currentGroup])
     
-    if(loading) return <div>Loading...</div>
-    if(error) console.error(error)
+    
+    if(loading || loading1) return <div>Loading...</div>
+    if(error || error1) console.error(error)
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -43,13 +50,34 @@ const EditGroup = () => {
     
     const handleSubmit = (e) => {
         e.preventDefault();
-        // dispatch()
+        dispatch(updateGroup({
+            ...formData,
+            userMember: selectedAccounts
+        }))
     };
 
     const handleRemoveUser = (userCN, groupName) => {
         if(window.confirm("Are you sure ?")) {
             return dispatch(removeUserFromGroup({userCN, groupName}))
           }
+    }
+
+    const handleSelectedUser = (account) => {
+        setSelectedAccounts(prev => {
+            // Check if the account is already selected
+            if (prev.includes(account)) {
+                // Remove it from array if it was already selected
+                return prev.filter(item => item !== account);
+            } else {
+                // Add it to the array if it wasn't selected
+                return [...prev, account];
+            }
+        });
+    };
+
+    const handleExistingAccount = (userMember, allUserData) => {
+        const filteredData = allUserData.filter(item => !userMember.includes(`cn=${item.username}, ou=users, dc=netsecurityass, dc=com`))
+        return filteredData
     }
 
     return (
@@ -82,7 +110,7 @@ const EditGroup = () => {
                     <h1 className="text-main-300 text-lg font-semibold italic mb-3">Member List</h1>
                     <ul className="flex flex-col gap-2">
                         {
-                            formData.userMember.map((member,index) => {
+                            currentGroup && currentGroup.info && currentGroup.info.memberUid.map((member,index) => {
                                 return (
                                     <li key={index} className="flex gap-2 items-center  bg-main-300
                                     text-main-400 px-2 py-1 rounded-md border border-main-300">
@@ -104,6 +132,27 @@ const EditGroup = () => {
                         }
                     </ul>
                 </div>
+
+
+                <div className='bg-main-200 rounded-lg p-4'>
+                    <h1 className='text-lg font-semibold text-main-300 mb-6'>Add your group member</h1>
+                    {handleExistingAccount(currentGroup && currentGroup.info && currentGroup.info.memberUid, allUserData).map((account, index) => {
+                        return (
+                            <div key={index}>
+                                <label className='flex font-semibold text-main-400 gap-2 font-mono items-center p-1' >
+                                    <input 
+                                        className='w-5 h-5 cursor-pointer accent-main-400'
+                                        type="checkbox"
+                                        checked={selectedAccounts.includes(account.username)}
+                                        onChange={() => handleSelectedUser(account.username)}
+                                    />
+                                    {account.username}
+                                </label>
+                            </div>
+                        )
+                    })}
+                </div>
+
                 <button type="submit" className="bg-main-300 hover:bg-main-200 text-main-400 hover:text-main-300 font-bold py-2 px-4 rounded-lg">Update Group</button>
             </form>
         </div>

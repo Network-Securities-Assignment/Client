@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { createHistoryEvent } from '../history/slice';
 
 export const searchAllUsers = createAsyncThunk(
     'user/searchAllUsers',
@@ -17,7 +18,6 @@ export const searchAllUsers = createAsyncThunk(
                 })
             }
             dispatch(setMaxUID(maxUID))
-            console.log(rawData, maxUID)
             return rawData;
         } catch (error) {
             return rejectWithValue(error.response.data);
@@ -28,11 +28,23 @@ export const searchAllUsers = createAsyncThunk(
 export const deleteUser = createAsyncThunk(
     'user/deleteUser',
     async (username, {rejectWithValue, dispatch}) => {
-        console.log(username)
         try {
             const response = await axios.delete(`http://localhost:3000/deleteUser/${username}`)
-            dispatch(searchAllUsers())
-            return response.data;
+        
+            if (response.status === 200) {  // Check if the user was successfully created
+                // Prepare and dispatch the history event
+                const preparedEvent = {
+                    action: "Remove User",
+                    details: {
+                        user: username,
+                    }
+                };
+                await dispatch(createHistoryEvent(preparedEvent));
+                dispatch(searchAllUsers())
+                return response.data;  // Return the newly created user data
+            } else {
+                throw new Error('Failed to remove user');
+            }
         } catch (error) {
             return rejectWithValue(error.response.data);
         }
@@ -41,29 +53,41 @@ export const deleteUser = createAsyncThunk(
 
 export const addUser = createAsyncThunk(
     'user/addUser',
-    async (userData, {rejectWithValue, getState}) => {
+    async (userData, { rejectWithValue, getState, dispatch }) => {
         try {
-            const state = getState()
-            console.log(userData, state.user.maxUID)
+            const state = getState();
             const submitData = {
-                uidNumber: `${state.user.maxUID + 1}`,
+                uidNumber: `${state.user.maxUID + 1}`,  // Automatically incrementing UID
                 sn: userData.firstName,
                 givenName: userData.lastName,
-                gidNumber:userData.group,
+                gidNumber: userData.group,
                 mail: userData.email,
                 username: userData.username,
                 password: userData.password,
-            }
-            console.log(submitData)
+            };
+
+            // First, try to create the user
             const response = await axios.post('http://localhost:3000/createUser', submitData);
-            return response.data;
+            if (response.status === 200) {  // Check if the user was successfully created
+                // Prepare and dispatch the history event
+                const preparedEvent = {
+                    action: "Add User",
+                    details: {
+                        user: userData.username,
+                        group: userData.group,
+                    }
+                };
+                await dispatch(createHistoryEvent(preparedEvent));
+                return response.data;  // Return the newly created user data
+            } else {
+                throw new Error('Failed to create user');
+            }
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            // If there is any error in the process, handle it by rejecting the value
+            return rejectWithValue(error.response ? error.response.data : error.message);
         }
     }
 );
-
-
 
 export const searchUser = createAsyncThunk(
     'user/searchUser',
@@ -79,11 +103,22 @@ export const searchUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
     'user/updateUser', 
-    async ({username, userData}, {rejectWithValue}) => {
+    async ({username, userData}, {rejectWithValue, dispatch}) => {
         try {
-            console.log(username, userData)
             const response = await axios.put(`http://localhost:3000/updateUser/${username}`,{userData:userData});
-            return response.data.user;
+            if (response.status === 200) {  // Check if the user was successfully created
+                // Prepare and dispatch the history event
+                const preparedEvent = {
+                    action: "Update user",
+                    details: {
+                        user: userData.username,
+                    }
+                };
+                await dispatch(createHistoryEvent(preparedEvent));
+                return response.data;  // Return the newly created user data
+            } else {
+                throw new Error('Failed to update user');
+            }
         } catch (error) {
             return rejectWithValue(error.response.data);
         }

@@ -3,6 +3,7 @@ import classes from './User.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { addUser } from '../../redux/user/slice'
 import { searchAllGroups } from '../../redux/group/slice'
+import { attributeObject } from '../../utils/obj'
 
 const AddUser = () => {
     const [userInfo, setUserInfo] = useState({
@@ -143,8 +144,7 @@ const AddUser = () => {
                 </div>
                 <div>
                 <select onChange={(e) => {
-                    let {name, value} = e.target
-                    console.log(value)
+                    let { value} = e.target
                     return setUserInfo(prev => ({
                         ...prev,
                         group: value,
@@ -154,7 +154,7 @@ const AddUser = () => {
                 <option value="">Select your primary group</option>
                 {allGroupsData.map((group,index) => (
                     <option key={index} value={group[1].values[0]}>
-                        {group[0].values[0]}
+                        {attributeObject(group).cn}
                     </option>
                 ))}
                 </select>

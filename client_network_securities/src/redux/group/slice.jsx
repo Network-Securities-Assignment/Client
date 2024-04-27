@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { createHistoryEvent } from '../history/slice';
 
 export const searchAllGroups = createAsyncThunk(
     'group/searchAllGroups',
@@ -30,8 +31,22 @@ export const deleteGroup = createAsyncThunk(
     async (cn, {rejectWithValue,dispatch}) => {
         try {
             const response = await axios.delete(`http://localhost:3000/deleteGroup/${cn}`)
-            dispatch(searchAllGroups())
-            return response.data;
+            if (response.status === 200) {  // Check if the user was successfully created
+                // Prepare and dispatch the history event
+                const preparedEvent = {
+                    action: "Remove Group",
+                    details: {
+                        group: cn,
+                    }
+                };
+                await dispatch(createHistoryEvent(preparedEvent));
+                dispatch(searchAllGroups())
+                return response.data;  // Return the newly created user data
+            } else {
+                throw new Error('Failed to remove group');
+            }
+            // dispatch(searchAllGroups())
+            // return response.data;
         }catch (error) {
             return rejectWithValue(error.response.data);
         }
@@ -40,7 +55,7 @@ export const deleteGroup = createAsyncThunk(
 
 export const addGroup = createAsyncThunk(
     'group/addGroup', 
-    async (groupInfo, {rejectWithValue, getState}) => {
+    async (groupInfo, {rejectWithValue, getState, dispatch}) => {
         try {
             const state = getState()
             const gid = state.group.maxGID + 1
@@ -48,19 +63,63 @@ export const addGroup = createAsyncThunk(
                 groupname: groupInfo.groupName,
                 gid: gid,
             })
-            return response.data;
+            if (response.status === 200) {  // Check if the user was successfully created
+                // Prepare and dispatch the history event
+                const preparedEvent = {
+                    action: "Add Group",
+                    details: {
+                        group:  groupInfo.groupName,
+                    }
+                };
+                await dispatch(createHistoryEvent(preparedEvent));
+                dispatch(searchAllGroups())
+                return response.data;  // Return the newly created user data
+            } else {
+                throw new Error('Failed to remove group');
+            }
+            // return response.data;
         }catch (error) {
             return rejectWithValue(error.response.data);
         }
     }
 )
 
+export const updateGroup = createAsyncThunk(
+    'group/updateGroup', 
+    async(groupInfo,{rejectWithValue,dispatch}) => {
+        try {
+            const response = await axios.put(`http://localhost:3000/updateGroup/${groupInfo.groupName}`,{
+                groupData: {
+                    groupName: groupInfo.groupName,
+                    gidNumber: groupInfo.gidNumber,
+                    userList: groupInfo.userMember
+                }
+            })
+            if (response.status === 200) {  // Check if the user was successfully created
+                // Prepare and dispatch the history event
+                const preparedEvent = {
+                    action: "Update Group",
+                    details: {
+                        group: groupInfo.groupName,
+                    }
+                };
+                await dispatch(createHistoryEvent(preparedEvent));
+                dispatch(searchGroup(groupInfo.groupName))
+                return response.data;  // Return the newly created user data
+            } else {
+                throw new Error('Failed to update group');
+            }
+            // return response.data;
+        }catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
 
 export const addUserToGroup = createAsyncThunk(
     'group/addUserToGroup', 
     async ({userList, groupName}, {rejectWithValue}) => {
         try {
-            console.log(userList, groupName)
             const response = await axios.post('http://localhost:3000/addManyUserToGroup', {
                 groupName,
                 userList,
@@ -72,14 +131,11 @@ export const addUserToGroup = createAsyncThunk(
     }
 )
 
-
 export const searchGroup = createAsyncThunk(
     'group/searchGroup',
     async (groupName, {rejectWithValue}) => {
         try {
-            console.log(groupName)
             const response = await axios.get(`http://localhost:3000/searchGroup/${groupName}`);
-            console.log(response.data.group)
             return response.data.group;
         } catch (error) {
             return rejectWithValue(error.response.data);
@@ -91,7 +147,6 @@ export const removeUserFromGroup = createAsyncThunk(
     'group/removeUserFromGroup', 
     async ({userCN, groupName}, {rejectWithValue,dispatch}) => {
         try {
-            console.log(userCN, groupName)
             const response = await axios.delete(`http://localhost:3000/removeUserFromGroup`,{
                 data: {
                     userCN,
@@ -109,7 +164,6 @@ export const removeUserFromGroup = createAsyncThunk(
         }
     }
 )
-
 
 const Slice = createSlice({
     name: 'group',
@@ -197,6 +251,17 @@ const Slice = createSlice({
             state.error = null;
         })
         .addCase(removeUserFromGroup.rejected, (state, action) => {
+            state.error = action.payload;
+            state.loading = false;
+        })
+        .addCase(updateGroup.fulfilled, (state) => {
+            state.loading = false;
+        })
+        .addCase(updateGroup.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(updateGroup.rejected, (state, action) => {
             state.error = action.payload;
             state.loading = false;
         });
