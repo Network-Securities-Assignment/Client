@@ -11,5 +11,9 @@
   "devDependencies": {
     "express": "^4.19.2",
     "ldapjs": "^3.0.7"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "mongoose": "^8.3.2"
   }
 }

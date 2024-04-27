@@ -1,6 +1,14 @@
 const express = require('express');
 const app = express();
-var cors = require('cors')
+var cors = require('cors');
+const mongoose = require('mongoose');
+const History = require('./history');
+
+// Kết nối với MongoDB
+mongoose.connect('mongodb://localhost:27018/historydb', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Error connecting to MongoDB:', err));
+  
 const LDAP = require('./ldapfunction');
 
 // Khởi tạo một đối tượng LDAP
@@ -8,8 +16,89 @@ const ldapClient = new LDAP('ldap://localhost:389');
 
 // Middleware để xử lý JSON
 app.use(express.json());
-
 app.use(cors())
+
+// Route để tạo sự kiện mới
+app.post('/createEvent', async (req, res) => {
+  const { action, details } = req.body;
+  try {
+    const newEvent = await History.createEvent(action, details);
+    res.status(201).json(newEvent);
+  } catch (error) {
+    res.status(500).json({ error: 'Error creating event' });
+  }
+});
+
+// Route để xem tất cả sự kiện
+app.get('/viewEvents', async (req, res) => {
+  try {
+    const events = await History.viewEvents();
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching events' });
+  }
+});
+
+// Route để xóa sự kiện dựa trên ID
+app.delete('/deleteEvent/:eventId', async (req, res) => {
+  const { eventId } = req.params;
+  try {
+    const deletedEvent = await History.deleteEvent(eventId);
+    if (deletedEvent) {
+      res.status(200).json(deletedEvent);
+    } else {
+      res.status(404).json({ error: 'Event not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error deleting event' });
+  }
+});
+
+//////////////////////////////////////////////////////////////////////
+// Route để tạo role mới
+app.post('/createRole', (req, res) => {
+  const { rolename } = req.body;
+
+  // Gọi phương thức createRole từ đối tượng ldapClient
+  ldapClient.createRole(rolename, (err) => {
+    if (err) {
+      res.status(500).json({ error: 'Error creating role' });
+    } else {
+      res.status(200).json({ message: 'Role created successfully' });
+    }
+  });
+});
+
+// Route để gán role cho user hoặc group
+app.post('/assignRole', (req, res) => {
+  const { role, objectname, objecttype } = req.body;
+
+  // Gọi phương thức assignRole từ đối tượng ldapClient
+  ldapClient.assignRole(role, objectname, objecttype, (err) => {
+    if (err) {
+      res.status(500).json({ error: `Error assigning role to ${objecttype}` });
+    } else {
+      res.status(200).json({ message: `${objecttype} assigned to role successfully` });
+    }
+  });
+});
+
+// Route để xóa role
+app.delete('/deleteRole/:rolename', (req, res) => {
+  const { rolename } = req.params;
+
+  // Gọi phương thức deleteRole từ đối tượng ldapClient
+  ldapClient.deleteRole(rolename, (err) => {
+    if (err) {
+      res.status(500).json({ error: 'Error deleting role' });
+    } else {
+      res.status(200).json({ message: 'Role deleted successfully' });
+    }
+  });
+});
+
+
+//////////////////////////////////////////////////////////////////////
 
 // Route để xác thực người dùng với LDAP
 app.post('/authenticate', (req, res) => {
@@ -48,7 +137,6 @@ app.get('/searchAllGroups', (req, res) => {
     }
   });
 });
-
 
 // // Route để tìm kiếm 1 người dùng trong LDAP
 // app.get('/searchUser/:uid', (req, res) => {
@@ -252,6 +340,12 @@ app.put('/modifyDN/:username', (req, res) => {
     }
   });
 });
+
+///History API
+
+
+
+
 
 
 // Khởi động server
