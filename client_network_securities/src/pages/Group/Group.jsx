@@ -54,7 +54,7 @@ const Group = () => {
                       {attributeObject(group).cn}
                     </td>
                     <td className="py-1 px-2 flex flex-col gap-2 ">
-                      {attributeObject(group).cn ? attributeObject(group).memberUid.map((value, index) => (
+                      {attributeObject(group).memberUid ? attributeObject(group).memberUid.map((value, index) => (
                       <div key={index} className="flex">
                         <div className="border-r border-main-400 px-2">
                           {index}

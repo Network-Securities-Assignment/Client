@@ -27,6 +27,8 @@ const Home = () => {
             <div className="bg-main-500 px-16 py-12 rounded-md flex flex-col h-full">
                 <h1 className="text-5xl font-semibold text-main-400 text-center"
                 >Network Security Assignment</h1>
+                <h1 className="text-3xl mt-2 font-mono font-semibold text-main-200 text-center"
+                >----IAM system----</h1>
                 <div className="flex gap-5 justify-center items-center h-full">
                     <div className="border-main-400 border-4 p-2 rounded-lg">
                         <img className="outline-none max-w-[380px] " src={Pic}/>

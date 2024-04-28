@@ -178,11 +178,15 @@ const AddUser = () => {
                 }}
                 className="font-mono font-semibold text-sm py-2 px-2.5 rounded-lg leading-tight bg-main-100 w-3/4 text-main-300">
                 <option value="">Select your primary group</option>
-                {allGroupsData.map((group,index) => (
-                    <option key={index} value={group[1].values[0]}>
+                {allGroupsData.map((group,index) => {
+                    return (
+                        <option key={index} value={attributeObject(group).gidNumber}>
                         {attributeObject(group).cn}
                     </option>
-                ))}
+                    )
+                }
+
+                )}
                 </select>
                 </div>
                 <button type='submit' className='bg-main-300 w-fit px-8 py-3 rounded text-main-400 font-semibold text-sm'
