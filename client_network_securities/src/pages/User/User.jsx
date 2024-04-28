@@ -26,7 +26,7 @@ const User = () => {
     const UserDataTable = ({ allUserData }) => {
         return (
           <div className="overflow-x-auto relative rounded-lg shadow-lg">
-            <table className="w-full text-sm text-left text-gray-500 ">
+            <table className="w-full text-sm text-left text-main-500 ">
               <thead className="text-xs uppercase text-center bg-gray-700 text-gray-200">
                 <tr>
                   <th scope="col" className="py-3 px-6">
@@ -41,13 +41,13 @@ const User = () => {
                   <th scope="col" className="py-3 px-6">
                     First Name
                   </th>
-                  <th scope="col" className="py-3 px-6">
+                  <th scope="col" className="py-3 px-4">
                     Email
                   </th>
                   <th scope="col" className="py-3 px-6">
                     Group ID (GID)
                   </th>
-                  <th scope="col" className="py-3 px-6">
+                  <th scope="col" className="py-3 px-5">
                     Action
                   </th>
                 </tr>
@@ -73,14 +73,14 @@ const User = () => {
                     <td className="py-4 px-6">
                       {userData.info.gidNumber}
                     </td>
-                    <td className="flex flex-col font-semibold">
+                    <td className="flex flex-col font-semibold text-sm">
                       <Link to={`${userData.username}`}
-                        className="py-2 px-6 bg-main-300 hover:bg-main-400 hover:text-main-200">
+                        className="py-1.5 bg-main-200 hover:bg-main-400 hover:text-main-200">
                           Edit
                       </Link>
                       <button 
                       onClick={() => handleDeleteUser(userData.username)}
-                      className="py-2 px-5 bg-red-500 hover:bg-main-400 hover:text-main-200">
+                      className="py-1.5 bg-red-500 hover:bg-main-400 hover:text-main-200">
                         Delete
                       </button>
                     </td>

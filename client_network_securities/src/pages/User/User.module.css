@@ -5,5 +5,5 @@
 
 .item > input:focus ~ label,
 .item > input:valid ~ label {
-    @apply text-main-100 opacity-100 py-0 px-2 text-sm bg-transparent transform -translate-x-2 -translate-y-5;
+    @apply text-main-300 opacity-100 py-0 px-2 text-sm bg-transparent transform -translate-x-2 -translate-y-5;
 }

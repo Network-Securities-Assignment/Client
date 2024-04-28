@@ -54,8 +54,8 @@ const historySlice = createSlice({
                 state.loading = true;
             })
             .addCase(getHistoryEvent.fulfilled, (state, action) => {
-                state.loading = false;
                 state.events = action.payload;
+                state.loading = false;
             })
             .addCase(getHistoryEvent.rejected, (state, action) => {
                 state.error = action.payload;

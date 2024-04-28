@@ -9,7 +9,7 @@ const Layout = ({children}) => {
         <div id="layout" >
             <Sidebar/>
             <Header/>
-            <main id="main" className="bg-main-400">
+            <main id="main" className="bg-main-200">
                 {children}
             </main>
         </div>

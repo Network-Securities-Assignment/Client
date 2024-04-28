@@ -15,6 +15,7 @@ const EditUser = () => {
         sn: '',
         uidNumber: '',
         userPassword: '',
+        retypePassword: '' 
     });
 
     const {currentUser, loading, error} = useSelector(state => state.user)
@@ -30,7 +31,8 @@ const EditUser = () => {
                 givenName: currentUser.info.givenName ? currentUser.info.givenName[0] : '',
                 sn: currentUser.info.sn ? currentUser.info.sn[0] : '',
                 uidNumber: currentUser.info.uidNumber ? currentUser.info.uidNumber[0] : '',
-                userPassword: '', // Presumably, you will not pre-fill passwords
+                userPassword: '',
+                retypePassword: '' 
             });
         }
     },[currentUser])
@@ -50,17 +52,21 @@ const EditUser = () => {
     
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (formData.userPassword !== formData.retypePassword) {
+            alert('Passwords do not match!');
+            return;
+        }
         dispatch(updateUser({username:username, userData: formData }))
     };
     
 
     return (
         <div className="flex flex-col gap-6 justify-center">
-            <h1 className="font-bold text-2xl uppercase text-main-300 w-fit">Add User</h1>
+            <h1 className="font-bold text-2xl uppercase text-main-300 w-fit">Update User</h1>
             <form onSubmit={handleSubmit} className="space-y-4 flex flex-col gap-3 max-w-sm">
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input 
-                        className="rounded-lg font-mono bg-main-200 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
                         name="mail"
                         type="text"
                         value={formData.mail}
@@ -71,7 +77,7 @@ const EditUser = () => {
                 
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input 
-                        className="rounded-lg font-mono bg-main-200 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
                         name="gidNumber"
                         type="text"
                         value={formData.gidNumber}
@@ -82,7 +88,7 @@ const EditUser = () => {
 
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input 
-                        className="rounded-lg font-mono bg-main-200 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
                         name="givenName"
                         type="text"
                         value={formData.givenName}
@@ -93,7 +99,7 @@ const EditUser = () => {
 
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input 
-                        className="rounded-lg font-mono bg-main-200 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
                         name="uidNumber"
                         type="text"
                         value={formData.uidNumber}
@@ -104,7 +110,7 @@ const EditUser = () => {
 
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input 
-                        className="rounded-lg font-mono bg-main-200 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
                         name="sn"
                         type="text"
                         value={formData.sn}
@@ -115,7 +121,7 @@ const EditUser = () => {
 
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input 
-                        className="rounded-lg font-mono bg-main-200 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
                         name="userPassword"
                         type="password"
                         value={formData.userPassword}
@@ -124,7 +130,17 @@ const EditUser = () => {
                     <label className="opacity-70 pointer-events-none transform transition-all duration-100 absolute py-2 px-2.5 font-semibold text-main-300 text-sm">Password</label>
                 </div>
 
-                <button type="submit" className="bg-main-300 hover:bg-main-200 text-main-400 hover:text-main-300 font-bold py-2 px-4 rounded-lg">Update User</button>
+                <div className={`${classes.item} "col-span-3 item w-full"`} >
+                    <input 
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        name="retypePassword"
+                        type="password"
+                        value={formData.retypePassword}
+                        onChange={handleChange}
+                    />
+                    <label className="opacity-70 pointer-events-none transform transition-all duration-100 absolute py-2 px-2.5 font-semibold text-main-300 text-sm">Retype your password</label>
+                </div>
+                <button type="submit" className="bg-main-300 hover:bg-main-100 text-main-400 hover:text-main-300 font-bold py-2 px-4 rounded-lg">Update User</button>
             </form>
         </div>
     );

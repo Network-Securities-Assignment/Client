@@ -111,7 +111,7 @@ export const updateUser = createAsyncThunk(
                 const preparedEvent = {
                     action: "Update user",
                     details: {
-                        user: userData.username,
+                        user: username,
                     }
                 };
                 await dispatch(createHistoryEvent(preparedEvent));
@@ -174,6 +174,7 @@ const Slice = createSlice({
         })
         .addCase(addUser.rejected, (state, action) => {
             state.error = action.payload;
+            alert(state.error.error)
             state.loading = false;
         })
         .addCase(searchUser.pending, (state) => {

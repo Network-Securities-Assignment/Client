@@ -52,6 +52,7 @@ const EditGroup = () => {
         e.preventDefault();
         dispatch(updateGroup({
             ...formData,
+            defaultGroupName: groupname,
             userMember: selectedAccounts
         }))
     };
@@ -76,7 +77,7 @@ const EditGroup = () => {
     };
 
     const handleExistingAccount = (userMember, allUserData) => {
-        const filteredData = allUserData.filter(item => !userMember.includes(`cn=${item.username}, ou=users, dc=netsecurityass, dc=com`))
+        const filteredData = allUserData.filter(item => userMember && !userMember.includes(`cn=${item.username}, ou=users, dc=netsecurityass, dc=com`))
         return filteredData
     }
 
@@ -86,7 +87,7 @@ const EditGroup = () => {
             <form onSubmit={handleSubmit} className="space-y-4 flex flex-col gap-3 max-w-md">
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input 
-                        className="rounded-lg font-mono bg-main-200 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
                         name="groupName"
                         type="text"
                         value={formData.groupName}
@@ -97,7 +98,7 @@ const EditGroup = () => {
 
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input 
-                        className="rounded-lg font-mono bg-main-200 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
+                        className="rounded-lg font-mono bg-main-100 w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none"
                         name="gidNumber"
                         type="text"
                         value={formData.gidNumber}
@@ -106,8 +107,8 @@ const EditGroup = () => {
                     <label className="opacity-70 pointer-events-none transform transition-all duration-100 absolute py-2 px-2.5 font-semibold text-main-300 text-sm">gidNumber</label>
                 </div>
 
-                <div className="bg-main-200 px-4 py-6 rounded-lg font-mono">
-                    <h1 className="text-main-300 text-lg font-semibold italic mb-3">Member List</h1>
+                <div className="bg-main-100 px-4 py-6 rounded-lg">
+                    <h1 className="text-main-300 text-lg font-semibold mb-3">Member List</h1>
                     <ul className="flex flex-col gap-2">
                         {
                             currentGroup && currentGroup.info && currentGroup.info.memberUid.map((member,index) => {
@@ -122,7 +123,7 @@ const EditGroup = () => {
                                         </div>
                                         <FontAwesomeIcon 
                                         onClick={() => handleRemoveUser(member, groupname)}
-                                        className="
+                                        className=" cursor-pointer
                                         hover:text-red-200
                                         text-lg text-red-500"
                                          icon="fa-solid fa-user-slash" />
@@ -134,7 +135,7 @@ const EditGroup = () => {
                 </div>
 
 
-                <div className='bg-main-200 rounded-lg p-4'>
+                <div className='bg-main-100 rounded-lg p-4'>
                     <h1 className='text-lg font-semibold text-main-300 mb-6'>Add your group member</h1>
                     {handleExistingAccount(currentGroup && currentGroup.info && currentGroup.info.memberUid, allUserData).map((account, index) => {
                         return (
@@ -153,7 +154,7 @@ const EditGroup = () => {
                     })}
                 </div>
 
-                <button type="submit" className="bg-main-300 hover:bg-main-200 text-main-400 hover:text-main-300 font-bold py-2 px-4 rounded-lg">Update Group</button>
+                <button type="submit" className="bg-main-300 hover:bg-main-100 text-main-400 hover:text-main-300 font-bold py-2 px-4 rounded-lg">Update Group</button>
             </form>
         </div>
     );

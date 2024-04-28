@@ -13,6 +13,15 @@ const Sidebar = () => {
         }));
     };
 
+
+    const homeItem = [
+        {
+            icon: <FontAwesomeIcon icon="fa-solid fa-home" className="w-5"/>, 
+            name: 'Home',
+            link: '/',
+        },
+    ]
+
     const ManageItem = [
         {
             icon: <FontAwesomeIcon icon="fa-solid fa-user" className="w-5"/>, 
@@ -49,48 +58,72 @@ const Sidebar = () => {
 
     return (
         <aside className="bg-main-100 px-0 py-10">
-            <div className="flex flex-col">
-                <div className="text-main-400">
-                    <h1 className="pl-4 pb-2 text-sm">Manage</h1>
-                    {
-                        ManageItem.map((item,index) => (
-                            <div key={index} 
-                            className="flex flex-col"
-                            >
-                                <NavLink  to={item.link}
-                                className={({isActive}) => `${isActive ? 'bg-main-300 text-main-400' : 'text-main-300'}
-                                    flex items-center gap-4 w-full 
-                                    text-lg font-semibold py-3 pl-4
-                                    `}>
-                                    {item.icon}
-                                    <p>
-                                    {item.name}
-                                    </p>
-                                    <FontAwesomeIcon onClick={() => toggleDropdown(item.name)}
-                                    icon="fa-solid fa-chevron-down" className="text-xl"/>
-                                </NavLink>
-                                {
-                                    item.children.map((child,idx) => (
-                                        dropdownOpen[item.name] && <div key={idx} className="" >
-                                        <NavLink to={child.link}
-                                            className={({isActive}) => `${isActive ? 'bg-main-300 text-main-400' : 'text-main-300'}
-                                            ml-6 flex gap-4 w-full items-center
-                                            rounded-md
-                                            text-sm font-semibold py-3 pl-4`}
-                                            >
-                                            <div>
-                                                {child.icon}
+            <div className="">
+                <div className="text-main-400 flex flex-col gap-2">
+                    <div>
+                        <h1 className="pl-4 pb-2 text-sm font-bold">Home</h1>
+                        {
+                            homeItem.map((item,index) => (
+                                <div key={index} 
+                                className="flex flex-col"
+                                >
+                                    <NavLink  to={item.link}
+                                    className={({isActive}) => `${isActive ? 'bg-main-300 text-main-400' : 'text-main-300'}
+                                        flex items-center gap-4 w-full 
+                                        text-lg font-semibold py-3 pl-4
+                                        `}>
+                                        {item.icon}
+                                        <p>
+                                        {item.name}
+                                        </p>
+                                    </NavLink>
+                                </div>  
+                            ))
+                        }
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                        <h1 className="pl-4 pb-2 text-sm  font-bold">Manage</h1>
+                        {
+                            ManageItem.map((item,index) => (
+                                <div key={index} 
+                                className="flex flex-col"
+                                >
+                                    <NavLink  to={item.link}
+                                    className={({isActive}) => `${isActive ? 'bg-main-300 text-main-400' : 'text-main-300'}
+                                        flex items-center gap-4 w-full 
+                                        text-lg font-semibold py-3 pl-4
+                                        `}>
+                                        {item.icon}
+                                        <p>
+                                        {item.name}
+                                        </p>
+                                        <FontAwesomeIcon onClick={() => toggleDropdown(item.name)}
+                                        icon="fa-solid fa-chevron-down" className="text-xl"/>
+                                    </NavLink>
+                                    {
+                                        item.children.map((child,idx) => (
+                                            dropdownOpen[item.name] && <div key={idx} className="" >
+                                            <NavLink to={child.link}
+                                                className={({isActive}) => `${isActive ? 'bg-main-300 text-main-400' : 'text-main-300'}
+                                                ml-6 flex gap-4 w-full items-center
+                                                rounded-md
+                                                text-sm font-semibold py-3 pl-4`}
+                                                >
+                                                <div>
+                                                    {child.icon}
+                                                </div>
+                                                <p>
+                                                    {child.name}
+                                                </p>
+                                            </NavLink>
                                             </div>
-                                            <p>
-                                                {child.name}
-                                            </p>
-                                        </NavLink>
-                                        </div>
-                                    ))
-                                }
-                            </div>  
-                        ))
-                    }
+                                        ))
+                                    }
+                                </div>  
+                            ))
+                        }
+                    </div>
+
                 </div>
 
             </div>

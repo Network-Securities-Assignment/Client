@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { createHistoryEvent } from '../history/slice';
+import { redirect } from 'react-router-dom';
 
 export const searchAllGroups = createAsyncThunk(
     'group/searchAllGroups',
@@ -88,15 +89,14 @@ export const updateGroup = createAsyncThunk(
     'group/updateGroup', 
     async(groupInfo,{rejectWithValue,dispatch}) => {
         try {
-            const response = await axios.put(`http://localhost:3000/updateGroup/${groupInfo.groupName}`,{
+            const response = await axios.put(`http://localhost:3000/updateGroup/${groupInfo.defaultGroupName}`,{
                 groupData: {
                     groupName: groupInfo.groupName,
                     gidNumber: groupInfo.gidNumber,
                     userList: groupInfo.userMember
                 }
             })
-            if (response.status === 200) {  // Check if the user was successfully created
-                // Prepare and dispatch the history event
+            if (response.status === 200) { 
                 const preparedEvent = {
                     action: "Update Group",
                     details: {
@@ -105,7 +105,7 @@ export const updateGroup = createAsyncThunk(
                 };
                 await dispatch(createHistoryEvent(preparedEvent));
                 dispatch(searchGroup(groupInfo.groupName))
-                return response.data;  // Return the newly created user data
+                return response.data;  
             } else {
                 throw new Error('Failed to update group');
             }
@@ -256,6 +256,7 @@ const Slice = createSlice({
         })
         .addCase(updateGroup.fulfilled, (state) => {
             state.loading = false;
+            alert("Update group successfully")
         })
         .addCase(updateGroup.pending, (state) => {
             state.loading = true;

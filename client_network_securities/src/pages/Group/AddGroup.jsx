@@ -32,7 +32,6 @@ const AddGroup = () => {
 
     const submitHandler = (e) => {
         e.preventDefault();
-        console.log(selectedAccounts)
         dispatch(addGroup(groupInfo))
         if(selectedAccounts.length > 0 ) dispatch(addUserToGroup({userList: selectedAccounts, groupName: groupInfo.groupName}))
     }
@@ -53,7 +52,7 @@ const AddGroup = () => {
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input className={`
                         rounded-lg font-mono
-                        bg-main-200
+                        bg-main-100
                         w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none`}
                         required={true}
                         name='Group Name'
@@ -71,8 +70,8 @@ const AddGroup = () => {
                         "
                     >Group Name</label>
                 </div>
-                <div className='bg-main-200 rounded-lg p-4'>
-                    <h1 className='text-lg font-semibold text-main-300 mb-6'>Add your group member</h1>
+                <div className='bg-main-100 rounded-lg p-4'>
+                    <h1 className='text-lg font-semibold text-main-300 mb-3'>Add your group member</h1>
                     {allUserData.map((account, index) => (
                         <div key={index}>
                             <label className='flex font-semibold text-main-400 gap-2 font-mono items-center p-1' >
@@ -89,7 +88,9 @@ const AddGroup = () => {
                 </div>
 
 
-                <button type='submit' className='bg-main-300 w-fit px-8 py-3 rounded text-main-400 font-semibold text-sm'
+                <button type='submit' className='
+                hover:bg-main-400 hover:text-main-200
+                bg-main-300 w-fit px-8 py-2 rounded-sm text-main-400 font-semibold font-mono'
                 >Add</button>
             </form>
         </div>

@@ -10,15 +10,19 @@ const History = () => {
         dispatch(getHistoryEvent())
     },[dispatch])
 
+    
     const {events, loading, error} = useSelector(state => state.history)
+    
+    useEffect(() => {
+      console.log(events)
+    },[events])
 
     if (loading) return <div>Loading....</div>
     
     if (error) {
       return error
     }
-
-
+    
     const HistoryDataTable = ({ events }) => {
         return (
           <div className="overflow-x-auto relative rounded-lg shadow-lg">
@@ -69,10 +73,9 @@ const History = () => {
           </div>
         );
     }
-
     return (
         <div>
-            <h1 className="font-bold text-2xl uppercase text-main-300">History</h1>
+            <h1 className="font-bold text-2xl uppercase text-main-300 mb-7">History</h1>
             <HistoryDataTable events={events}/>
         </div>
     )

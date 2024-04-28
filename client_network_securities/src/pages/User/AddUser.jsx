@@ -12,6 +12,7 @@ const AddUser = () => {
         email: '',
         userName: '',
         password: '',
+        retypePassword: '',
         group: '',
     })
     const dispatch = useDispatch()
@@ -30,6 +31,10 @@ const AddUser = () => {
     
     const submitHandler = (e) => {
         e.preventDefault();
+        if (userInfo.password !== userInfo.retypePassword) {
+            alert('Passwords do not match!');
+            return;
+        }
         dispatch(addUser(userInfo))
     }
 
@@ -40,7 +45,7 @@ const AddUser = () => {
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input className={`
                         rounded-lg font-mono
-                        bg-main-200
+                        bg-main-100
                         w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none`}
                         required={true}
                         name='First Name'
@@ -61,7 +66,7 @@ const AddUser = () => {
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input className={`
                         rounded-lg font-mono
-                        bg-main-200
+                        bg-main-100
                         w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none`}
                         required={true}
                         name='Last Name'
@@ -82,7 +87,7 @@ const AddUser = () => {
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input className={`
                         rounded-lg font-mono
-                        bg-main-200
+                        bg-main-100
                         w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none`}
                         required={true}
                         name='Email'
@@ -103,7 +108,7 @@ const AddUser = () => {
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input className={`
                         rounded-lg font-mono
-                        bg-main-200
+                        bg-main-100
                         w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none`}
                         required={true}
                         name='username'
@@ -124,7 +129,7 @@ const AddUser = () => {
                 <div className={`${classes.item} "col-span-3 item w-full"`} >
                     <input className={`
                         rounded-lg font-mono
-                        bg-main-200
+                        bg-main-100
                         w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none`}
                         required={true}
                         name='password'
@@ -142,6 +147,27 @@ const AddUser = () => {
                         "
                     >Password</label>
                 </div>
+                <div className={`${classes.item} "col-span-3 item w-full"`} >
+                    <input className={`
+                        rounded-lg font-mono
+                        bg-main-100
+                        w-full py-2 px-2.5 text-main-400 leading-tight focus:outline-none`}
+                        required={true}
+                        name='retypePassword'
+                        type='password'
+                        label='retypePassword'
+                        onChange={(e) => setUserInfo(prev => ({
+                            ...prev,
+                            retypePassword: e.target.value,
+                        }))}
+                    />
+                    <label className="
+                        opacity-70 pointer-events-none
+                        transform transition-all duration-100 
+                        absolute py-2 px-2.5 font-semibold text-main-300 text-sm
+                        "
+                    >Retype your Password</label>
+                </div>
                 <div>
                 <select onChange={(e) => {
                     let { value} = e.target
@@ -150,7 +176,7 @@ const AddUser = () => {
                         group: value,
                     })) 
                 }}
-                className="font-mono font-semibold text-sm py-2 px-2.5 rounded-lg leading-tight bg-main-200 w-3/4 text-main-300">
+                className="font-mono font-semibold text-sm py-2 px-2.5 rounded-lg leading-tight bg-main-100 w-3/4 text-main-300">
                 <option value="">Select your primary group</option>
                 {allGroupsData.map((group,index) => (
                     <option key={index} value={group[1].values[0]}>

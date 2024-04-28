@@ -56,10 +56,10 @@ const Signup = () => {
                         "
                     >Retype your password</label>
                 </div>
-                <button className='
+                <button disabled className='
                 hover:bg-main-400 hover:text-main-300
                 col-span-3 bg-main-300 rounded-lg p-2 text-sm font-mono font-bold text-white'>
-                    Signup
+                    On development...
                 </button>
             </form>
         </div>
