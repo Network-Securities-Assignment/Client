@@ -97,7 +97,6 @@ app.delete('/deleteRole/:rolename', (req, res) => {
   });
 });
 
-
 //////////////////////////////////////////////////////////////////////
 
 // Route để xác thực người dùng với LDAP
@@ -138,28 +137,13 @@ app.get('/searchAllGroups', (req, res) => {
   });
 });
 
-// // Route để tìm kiếm 1 người dùng trong LDAP
-// app.get('/searchUser/:uid', (req, res) => {
-//   const { uid} = req.params;
-//   console.log(uid)
-//   // Gọi phương thức searchUser từ đối tượng ldapClient
-//   ldapClient.searchUser(uid, (err, result) => {
-//     if (err) {
-//       res.status(500).json({ error: 'Error searching user' });
-//     } else {
-//       res.status(200).json({ users: result });
-//     }
-//   });
-// });
-
 // Route để tạo người dùng trong LDAP
 app.post('/createUser', (req, res) => {
   const {uidNumber, sn, givenName, gidNumber, mail, username, password} = req.body;
-  console.log(uidNumber, sn, givenName, gidNumber, mail, username, password)
   // Gọi phương thức createUser từ đối tượng ldapClient
   ldapClient.createUser(uidNumber, sn, givenName, gidNumber, mail, username, password, (err) => {
     if (err) {
-      res.status(500).json({ error: 'Error creating user' });
+      res.status(500).json({ error: 'Error creating user:' + err });
     } else {
       res.status(200).json({ message: 'User created successfully' });
     }
